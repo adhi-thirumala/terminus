@@ -52,7 +52,7 @@ github_alerts = true
 
 [extra]
 close_responsive_menu_on_resize = true
-favicon_emoji = "👨‍💻"
+favicon_emoji = "🦀"    
 fediverse_creator = "@ebkalderon@hachyderm.io"
 layout = "center"
 show_default_author = false

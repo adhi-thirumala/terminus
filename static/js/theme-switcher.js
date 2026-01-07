@@ -16,6 +16,7 @@ class ThemeSwitcher {
       "catppuccin-frappe": "😸 Catppuccin Frappé",
       "catppuccin-macchiato": "😻 Catppuccin Macchiato",
       "catppuccin-mocha": "😼 Catppuccin Mocha",
+      "ashen": "🔥 Ashen",
     };
 
     this.currentTheme = this.getStoredTheme();

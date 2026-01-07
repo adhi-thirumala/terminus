@@ -103,4 +103,44 @@
         --accent-color: #89b4fa;
         --footnote-color: rgba(186, 194, 222, 0.7);
     }
+
+    // Ashen theme - Warm, muted theme born from dying embers
+    &:has(body[data-theme="ashen"]) {
+        --background-color: #121212;
+        --text-color: #a7a7a7;
+        --accent-color: #B14242;
+        --footnote-color: rgba(148, 148, 148, 0.7);
+
+        // Ashen alert colors - no greens, warm ember palette
+        // Note - muted gray
+        --alert-note-border: #b4b4b4;
+        --alert-note-bg: #212121;
+        --alert-note-code: #535353;
+
+        // Tip - orange_blaze (replaces green)
+        --alert-tip-border: #C4693D;
+        --alert-tip-bg: #191919;
+        --alert-tip-code: #89492a;
+
+        // Info - blue
+        --alert-info-border: #4A8B8B;
+        --alert-info-bg: #191919;
+        --alert-info-code: #212121;
+        --alert-important-border: #4A8B8B;
+        --alert-important-bg: #191919;
+        --alert-important-code: #212121;
+
+        // Warning - orange_smolder
+        --alert-warning-border: #E49A44;
+        --alert-warning-bg: #191919;
+        --alert-warning-code: #89492a;
+
+        // Danger - red_ember
+        --alert-danger-border: #B14242;
+        --alert-danger-bg: #191919;
+        --alert-danger-code: #89492a;
+        --alert-caution-border: #DF6464;
+        --alert-caution-bg: #191919;
+        --alert-caution-code: #89492a;
+    }
 }
