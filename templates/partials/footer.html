@@ -1,10 +1,10 @@
-{%- if config.generate_feeds or config.extra.socials -%}
+{%- if config.generate_feeds or config.extra.socials | default(value=[]) -%}
 <address class="socials">
     <ul>
         {%- if config.generate_feeds -%}
         {%- for feed in config.feed_filenames %}
         <li>
-            <a class="social-link" href="{{ get_url(path=feed) }}" title="{{ feed | trim_end_matches(pat=".xml") }} feed" aria-label="{{ feed | trim_end_matches(pat=".xml") }} feed">
+            <a class="social-link" href="{{ get_url(path=feed) }}" title="{{ feed | trim_end(pat=".xml") }} feed" aria-label="{{ feed | trim_end(pat=".xml") }} feed">
                 <svg role="img" aria-label="feed icon">
                     {% if feed == "atom.xml" -%}
                     <use aria-hidden="true" href="{{ get_url(path="images/social_icons/atom.svg") | safe }}#icon" />
@@ -29,10 +29,10 @@
 </address>
 {% endif -%}
 
-{%- if config.extra.copyright -%}
+{%- if config.extra.copyright | default(value="") -%}
 <p class="copyright">
     {%- for line in config.extra.copyright | split(pat="::") %}
-    {% set year_string = ["<time>", now() | date(format="%Y"), "</time>"] | join -%}
+    {% set year_string = "<time>" ~ now() | date(format="%Y") ~ "</time>" -%}
     {%- set templated = line | trim | replace(from="$YEAR", to=year_string) | replace(from="$AUTHOR", to=config.author | default(value="")) -%}
     <span>{{ templated | markdown(inline=true) | safe }}</span>
     {%- endfor %}

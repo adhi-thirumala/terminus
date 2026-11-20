@@ -15,13 +15,13 @@
 {%- block main -%}
 {%- filter indent -%}{%- filter indent -%}
 {%- if section.content -%}
-<header class="content {%- if section.extra.framed %} framed{%- endif -%}">
+<header class="content {%- if section.extra.framed | default(value=false) %} framed{%- endif -%}">
     {{ section.content | indent | safe }}
 </header>
 {% endif -%}
 
-{% for page in paginator.pages | default(value=section.pages) -%}
-{{ post_macros::excerpt(page=page) }}
+{% for page in (paginator.pages if paginator else section.pages) -%}
+{{ <terminus.post_excerpt page={page} /> }}
 {% endfor -%}
 
 {%- if paginator and paginator.number_pagers > 1 %}

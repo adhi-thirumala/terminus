@@ -1,10 +1,6 @@
-{%- set source_image_path = page.colocated_path ~ src -%}
-{%- set alt_text = alt -%}
-{%- set caption = caption | default(value="") -%}
-{%- set lazy_load = lazy | default(value=true) -%}
-
 {#- Generates responsive images from a given high-resolution source image -#}
-
+{%- component responsive_image(src: string, alt: string, caption = "", lazy = true, @page, @config) -%}
+{%- set source_image_path = page.colocated_path ~ src -%}
 {%- set metadata = get_image_metadata(path=source_image_path) -%}
 {%- set source_width = metadata.width -%}
 
@@ -12,8 +8,7 @@
 {%- for width in config.extra.responsive_images.widths -%}
     {%- if source_width >= width -%}
         {%- set resized_image = resize_image(path=source_image_path, width=width, op="fit_width", quality=80) -%}
-        {%- set candidate = resized_image.url ~ " " ~ width ~ "w" -%}
-        {%- set_global image_candidates = image_candidates | concat(with=candidate) -%}
+        {%- set_global image_candidates = [...image_candidates, resized_image.url ~ " " ~ width ~ "w"] -%}
     {%- endif -%}
 {%- endfor -%}
 
@@ -24,15 +19,15 @@
 <figure>
 {% endif -%}
 
-<img src="{{ fallback_image.url | safe }}" alt="{{ alt_text }}"
-     width="{{ fallback_image.width }}" height="{{ fallback_image.width / (metadata.width / metadata.height) | round(method="floor") }}"
+<img src="{{ fallback_image.url | safe }}" alt="{{ alt }}"
+     width="{{ fallback_image.width }}" height="{{ (fallback_image.width / (metadata.width / metadata.height)) | round(method="floor") | int }}"
      {% if config.extra.layout == "full-width" -%}
      sizes="(min-width: 700px) calc(82vw + 46px), calc(100vw - 40px)"
      {%- else -%}
      sizes="(min-width: 920px) 784px, (min-width: 700px) calc(82vw + 46px), calc(100vw - 40px)" {# Browser hint: main content width will max out at 784px in practice #}
      {%- endif %}
      srcset="{{ image_candidates | join(sep=",\n             ") | safe }}"
-     {%- if lazy_load %}
+     {%- if lazy %}
      loading="lazy"
      {%- else %}
      fetchpriority="high"
@@ -44,3 +39,4 @@
     </figcaption>
 </figure>
 {%- endif %}
+{%- endcomponent responsive_image -%}

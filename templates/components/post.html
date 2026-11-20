@@ -1,6 +1,7 @@
-{%- macro excerpt(page) -%}
+{%- component terminus.post_excerpt(page: map) -%}
 <article class="post">
-    {{ post_macros::header(page=page, heading="h2", is_excerpt=true) | indent | safe }}
+    {% set post_header = <terminus.post_header page={page} heading="h2" is_excerpt={true} /> -%}
+    {{ post_header | indent | safe }}
 
     {%- set permalink = page.permalink -%}
 
@@ -12,9 +13,9 @@
     {%- endif %}
     <a class="read-more" href="{{ permalink | safe }}" aria-label="Read more about {{ page.title }}">read more →</a>
 </article>
-{%- endmacro -%}
+{%- endcomponent terminus.post_excerpt -%}
 
-{%- macro header(page, heading, is_excerpt=false) -%}
+{%- component terminus.post_header(page: map, heading: string, is_excerpt = false, @config) -%}
 <header>
     <{{ heading }} class="post-title">
         <a href="{{ page.permalink | safe }}">{{ page.title }}</a>
@@ -25,8 +26,8 @@
         {% endif -%}
 
         <li title="Published on {{ page.date }}{%- if page.updated %}, last updated {{ page.updated }}{%- endif -%}">
-            {{- post_macros::date(value=page.date) }}
-            {%- if page.updated %}&nbsp;[Updated: {{ post_macros::date(value=page.updated) }}]{%- endif -%}
+            {{- <terminus.date value={page.date} /> }}
+            {%- if page.updated %}&nbsp;[Updated: {{ <terminus.date value={page.updated} /> }}]{%- endif -%}
         </li>
 
         {%- if page.authors %}
@@ -36,37 +37,37 @@
             {{ author }}{%- if not loop.last -%}, {% endif -%}
             {%- endfor -%}
         </li>
-        {%- elif config.author and config.extra.show_default_author %}
+        {%- elif config.author and config.extra.show_default_author | default(value=false) %}
         <li role="separator" aria-hidden="true">::</li>
         <li title="Author">{{ config.author }}</li>
         {%- endif %}
         <li role="separator" aria-hidden="true">::</li>
 
-        {%- set reading_time = page.reading_time ~ " min" | replace(from="0 min", to="<1 min") -%}
-        {%- set word_count = [page.word_count ~ " word", page.word_count | pluralize] | join %}
+        {%- set reading_time = "<1 min" if page.reading_time == 0 else page.reading_time ~ " min" -%}
+        {%- set word_count = page.word_count ~ " word" ~ page.word_count | pluralize %}
         <li title="{{ word_count }}"><time datetime="PT{{ page.reading_time }}M">{{ reading_time }}</time> read</li>
     </ul>
 
     {%- if page.taxonomies %}
     <div class="post-tags">
-        {%- for category in page.taxonomies.categories | default(value=[]) %}
-        {% set category_url = get_taxonomy_url(kind="categories", name=category, lang=page.lang) -%}
+        {%- for category in page.taxonomies?.categories or [] %}
+        {% set category_url = get_taxonomy_url(kind="categories", term=category, lang=page.lang) -%}
         <span>&lbrace;<a {% if not is_excerpt -%}rel="tag" {% endif -%} href="{{ category_url | safe }}">{{ category }}</a>&rbrace;</span>
         {%- endfor %}
 
-        {%- if page.taxonomies.categories and page.taxonomies.tags %}
+        {%- if page.taxonomies?.categories and page.taxonomies?.tags %}
         <span role="separator">::</span>
         {%- endif %}
 
-        {%- for tag in page.taxonomies.tags | default(value=[]) %}
-        {% set tag_url = get_taxonomy_url(kind="tags", name=tag, lang=page.lang) -%}
+        {%- for tag in page.taxonomies?.tags or [] %}
+        {% set tag_url = get_taxonomy_url(kind="tags", term=tag, lang=page.lang) -%}
             <span>#<a {% if not is_excerpt -%}rel="tag" {% endif -%} href="{{ tag_url | safe }}">{{ tag }}</a></span>
         {%- endfor %}
     </div>
     {%- endif %}
 </header>
-{%- endmacro -%}
+{%- endcomponent terminus.post_header -%}
 
-{%- macro date(value) -%}
+{%- component terminus.date(value: string) -%}
 <time datetime="{{ value }}">{{ value | date(format="%Y.%m.%d") }}</time>
-{%- endmacro -%}
+{%- endcomponent terminus.date -%}

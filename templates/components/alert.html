@@ -1,0 +1,19 @@
+{#- Copyright (c) 2023 Óscar Fernández -#}
+{#- Derived from this shortcode in Tabi theme: -#}
+{#- https://github.com/welpo/tabi/blob/93af295/templates/shortcodes/admonition.html -#}
+
+{#- Output must stay a single HTML block (no blank lines): content components are -#}
+{#- rendered before Markdown, so a blank line would end the block mid-alert. -#}
+{%- component alert(type = "info", title = "", icon = "", text = "") -%}
+    {%- set alert_title = title or type | upper -%}
+    {%- set alert_icon = icon or type -%}
+    {%- set alert_text = text or body | default(value="") -%}
+    {%- set label_id = get_hash(literal=type ~ alert_title ~ alert_icon ~ alert_text, sha_type=256) | truncate(length=8, end="") -%}
+<section class="alert {{ type }}" role="note" aria-labelledby="{{ label_id }}">
+    <div class="alert-icon alert-icon-{{ alert_icon }}"></div>
+    <div class="alert-content" role="presentation">
+        <strong id="{{ label_id }}" class="alert-title" aria-hidden="true">{{ alert_title | safe }}</strong>
+        {{ alert_text | markdown | trim | safe }}
+    </div>
+</section>
+{%- endcomponent alert -%}

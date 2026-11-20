@@ -8,14 +8,15 @@
     {%- if page.description %}
     <meta name="description" content="{{ page.description | markdown(inline=true) | striptags }}">
     {%- elif page.summary %}
-    <meta name="description" content="{{ page.summary | linebreaksbr | replace(from="<br>", to=" ") | striptags | trim_end_matches(pat=".") | safe }}…">
+    <meta name="description" content="{{ page.summary | newlines_to_br | replace(from="<br>", to=" ") | striptags | trim_end(pat=".") | safe }}…">
     {%- endif %}
 {%- endblock -%}
 
 {%- block main -%}
 {%- filter indent -%}{%- filter indent -%}
 <article class="post content">
-    {{ post_macros::header(page=page, heading="h1") | indent | safe }}
+    {% set post_header = <terminus.post_header page={page} heading="h1" /> -%}
+    {{ post_header | indent | safe }}
 {%- endfilter %}{%- endfilter %}
 
 {{ page.content | safe }}
@@ -32,7 +33,7 @@
         {%- if page.lower %}
         <a rel="next" href="{{ page.lower.permalink | safe }}" aria-label="Next article">
             <span aria-hidden="true">&lt;&nbsp;[</span>
-            {{- page.lower.title | truncate(value=100, end="…") -}}
+            {{- page.lower.title | truncate(length=100, end="…") -}}
             <span aria-hidden="true">]</span>
         </a>
         {%- endif %}
@@ -42,7 +43,7 @@
         {%- if page.higher %}
         <a rel="prev" href="{{ page.higher.permalink | safe }}" aria-label="Prev article">
             <span aria-hidden="true">[</span>
-            {{- page.higher.title | truncate(value=100, end="…") -}}
+            {{- page.higher.title | truncate(length=100, end="…") -}}
             <span aria-hidden="true">]&nbsp;&gt;</span>
         </a>
         {%- endif %}

@@ -1,0 +1,12 @@
+{%- component terminus.feed_link(filename: string, title: string) -%}
+    {%- if filename is ending_with(pat="atom.xml") -%}
+        {%- set type = 'type="application/atom+xml" ' -%}
+    {%- elif filename is ending_with(pat="rss.xml") -%}
+        {%- set type = 'type="application/rss+xml" ' -%}
+    {%- elif filename is ending_with(pat=".json") -%}
+        {%- set type = 'type="application/feed+json" ' -%}
+    {%- else -%}
+        {%- set type = "" -%}
+    {%- endif -%}
+    <link rel="alternate" {{ type | safe -}} href="{{ get_url(path=filename) }}" title="{{ title | replace(from='"', to="&quot;") | safe }}">
+{%- endcomponent terminus.feed_link -%}

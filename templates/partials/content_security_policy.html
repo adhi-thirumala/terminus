@@ -1,39 +1,39 @@
-{% if config.extra.content_security_policy.enable == true -%}
+{% if config.extra?.content_security_policy?.enable == true -%}
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'
     {%- set allowed_domains = [] -%}
 
     {#- Allow WebSocket protocol if served via `zola serve` -#}
     {%- if config.mode == "serve" -%}
-        {%- set connect_src = load_data(literal=`{"directive": "connect-src", "domains": ["'self'", "ws:"]}`, format="json") -%}
-        {%- set script_src_elem = load_data(literal=`{"directive": "script-src-elem", "domains": ["'self'", "'unsafe-inline'"]}`, format="json") -%}
-        {%- set allowed_domains = allowed_domains | concat(with=connect_src) | concat(with=script_src_elem) -%}
+        {%- set allowed_domains = [
+            ...allowed_domains,
+            {"directive": "connect-src", "domains": ["'self'", "ws:"]},
+            {"directive": "script-src-elem", "domains": ["'self'", "'unsafe-inline'"]},
+        ] -%}
     {%- endif -%}
 
     {#- Allow `data:` URL scheme if emoji-based favicon is used -#}
     {%- if config.extra.favicon_emoji -%}
-        {%- set img_src = load_data(literal=`{"directive": "img-src", "domains":["'self'", "data:"]}`, format="json") -%}
-        {%- set allowed_domains = allowed_domains | concat(with=img_src) -%}
+        {%- set allowed_domains = [...allowed_domains, {"directive": "img-src", "domains": ["'self'", "data:"]}] -%}
     {%- endif -%}
 
     {#- Allow inline CSS if Zola syntax highlighting is enabled -#}
     {%- if config.markdown.highlighting -%}
-        {%- set style_src = load_data(literal=`{"directive": "style-src-attr", "domains": ["'unsafe-inline'"]}`, format="json") -%}
-        {%- set allowed_domains = allowed_domains | concat(with=style_src) -%}
+        {%- set allowed_domains = [...allowed_domains, {"directive": "style-src-attr", "domains": ["'unsafe-inline'"]}] -%}
     {%- endif -%}
 
-    {%- set extra_domains = config.extra.content_security_policy.allowed_domains -%}
-    {%- set allowed_domains = allowed_domains | concat(with=extra_domains) -%}
+    {%- set extra_domains = config.extra.content_security_policy.allowed_domains | default(value=[]) -%}
+    {%- set allowed_domains = [...allowed_domains, ...extra_domains] -%}
 
     {%- for directive, entries in allowed_domains | group_by(attribute="directive") -%}
         {%- set_global domains = [] -%}
 
         {%- for entry in entries -%}
-            {%- set_global domains = domains | concat(with=entry.domains) | unique -%}
+            {%- set_global domains = [...domains, ...entry.domains] | unique -%}
         {%- endfor -%}
 
-        {%- set domains = domains | join(sep=" ") -%}
-        {%- if domains -%}
-            ; {{ directive }} {{ domains | safe }}
+        {%- set domains_str = domains | join(sep=" ") -%}
+        {%- if domains_str -%}
+            ; {{ directive }} {{ domains_str | safe }}
         {%- endif -%}
     {%- endfor -%}
 ">
